@@ -22,13 +22,13 @@
     "url": "git@github.com:buehler/proc-that-rest-extractor.git"
   },
   "bugs": "https://github.com/buehler/proc-that-rest-extractor/issues",
-  "readme": "README.md",
   "author": "Christoph Bühler <christoph.buehler@bluewin.ch>",
   "license": "GPL-3.0",
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "mocha": "^2.4.5",
+    "proc-that": "^0.1.1",
     "rimraf": "^2.5.2",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
