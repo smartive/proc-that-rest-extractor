@@ -28,7 +28,7 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "mocha": "^2.4.5",
-    "proc-that": "^0.1.1",
+    "proc-that": "^0.2.0",
     "rimraf": "^2.5.2",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
@@ -37,6 +37,8 @@
     "typings": "^0.7.9"
   },
   "dependencies": {
-    "es6-promise": "^3.1.2"
+    "es6-promise": "^3.1.2",
+    "restler": "^3.4.0",
+    "rxjs": "^5.0.0-beta.4"
   }
 }
