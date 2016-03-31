@@ -55,8 +55,26 @@ describe('RestExtractor', () => {
     let extractor:RestExtractor;
 
     beforeEach(() => {
-        extractor = new RestExtractor();
+        extractor = new RestExtractor('url');
     });
 
-    
+    it('should get an array of objects', done => {
+        let spy = sinon.spy();
+        (extractor as any).rest = new ArrayMock();
+
+        extractor
+            .read()
+            .subscribe(spy, err => {
+                done(err);
+            }, () => {
+                try {
+                    spy.should.have.callCount(5);
+                    spy.firstCall.should.be.calledWithExactly({objId: 1});
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            });
+    });
+
 });

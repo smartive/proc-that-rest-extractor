@@ -35,7 +35,7 @@ export class RestExtractor implements IExtract {
                 })
                 .on('complete', result => {
                     try {
-                        let json = JSON.parse(result);
+                        let json = typeof result === 'string' ? JSON.parse(result) : result;
                         if (!(json instanceof Array) && json.constructor !== Array) {
                             observer.next(json);
                         }
