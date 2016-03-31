@@ -50,6 +50,18 @@ class ErrorMock extends Mock {
     }
 }
 
+class StringMock extends Mock {
+    protected data():any {
+        return '{"objId":5}';
+    }
+}
+
+class StringErrorMock extends Mock {
+    protected data():any {
+        return '{objId:5}';
+    }
+}
+
 describe('RestExtractor', () => {
 
     let extractor:RestExtractor;
@@ -74,6 +86,68 @@ describe('RestExtractor', () => {
                 } catch (e) {
                     done(e);
                 }
+            });
+    });
+
+    it('should get single object', done => {
+        let spy = sinon.spy();
+        (extractor as any).rest = new ObjectMock();
+
+        extractor
+            .read()
+            .subscribe(spy, err => {
+                done(err);
+            }, () => {
+                try {
+                    spy.should.be.calledOnce;
+                    spy.should.be.calledWithExactly({objId: 5});
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            });
+    });
+
+    it('should call error', done => {
+        (extractor as any).rest = new ErrorMock();
+
+        extractor
+            .read()
+            .subscribe(null, err => {
+                done();
+            }, () => {
+                done(new Error('did not throw'));
+            });
+    });
+
+    it('should parse string to an object', done => {
+        let spy = sinon.spy();
+        (extractor as any).rest = new StringMock();
+
+        extractor
+            .read()
+            .subscribe(spy, err => {
+                done(err);
+            }, () => {
+                try {
+                    spy.should.be.calledOnce;
+                    spy.should.be.calledWithExactly({objId: 5});
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            });
+    });
+
+    it('should call error on an invalid parse', done => {
+        (extractor as any).rest = new StringErrorMock();
+
+        extractor
+            .read()
+            .subscribe(null, err => {
+                done();
+            }, () => {
+                done(new Error('did not throw'));
             });
     });
 

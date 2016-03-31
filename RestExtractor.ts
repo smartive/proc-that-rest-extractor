@@ -36,10 +36,11 @@ export class RestExtractor implements IExtract {
                 .on('complete', result => {
                     try {
                         let json = typeof result === 'string' ? JSON.parse(result) : result;
-                        if (!(json instanceof Array) && json.constructor !== Array) {
-                            observer.next(json);
+                        if (json instanceof Array || json.constructor === Array) {
+                            json.forEach(element => observer.next(element));
+                        } else {
+                            observer.next(json)
                         }
-                        json.forEach(element => observer.next(element));
                     } catch (e) {
                         observer.error(e);
                     } finally {
