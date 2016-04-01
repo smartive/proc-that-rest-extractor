@@ -1,6 +1,12 @@
-# proc-that-rest-extractor [![Build Status](https://travis-ci.org/buehler/proc-that-rest-extractor.svg?branch=master)](https://travis-ci.org/buehler/proc-that-rest-extractor)
+# RestExtractor [![Build Status](https://travis-ci.org/buehler/proc-that-rest-extractor.svg?branch=master)](https://travis-ci.org/buehler/proc-that-rest-extractor)
 Modular extractor for `proc-that`. Loads items from REST APIs via http requests.
 Uses [restler](https://github.com/danwrong/restler) for downloading resources.
+
+## Installation
+
+```bash
+npm install --save proc-that-rest-extractor
+```
 
 ## Usage
 
