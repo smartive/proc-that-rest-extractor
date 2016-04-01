@@ -1,6 +1,6 @@
 {
   "name": "proc-that-rest-extractor",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "extractor for proc-that which loads results from REST apis.",
   "main": "dist/index.js",
   "scripts": {
