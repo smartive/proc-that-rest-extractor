@@ -1,0 +1,1 @@
+export {RestExtractor} from './RestExtractor';
