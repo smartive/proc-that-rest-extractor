@@ -2,7 +2,7 @@ import chai = require('chai');
 import asPromised = require('chai-as-promised');
 import sinon = require('sinon');
 import sinonChai = require('sinon-chai');
-import {RestExtractor} from './RestExtractor';
+import {RestExtractor, RestExtractorMethod} from './RestExtractor';
 import {EventEmitter} from 'events';
 
 let should = chai.should();
@@ -59,6 +59,14 @@ class StringMock extends Mock {
 class StringErrorMock extends Mock {
     protected data():any {
         return '{objId:5}';
+    }
+}
+
+class SelectorMock extends Mock {
+    protected data():any {
+        return {
+            data: [{objId: 5}]
+        };
     }
 }
 
@@ -148,6 +156,26 @@ describe('RestExtractor', () => {
                 done();
             }, () => {
                 done(new Error('did not throw'));
+            });
+    });
+
+    it('should use resultSelector correctly', done => {
+        let spy = sinon.spy();
+        extractor = new RestExtractor('url', RestExtractorMethod.Get, o => o.data);
+        (extractor as any).rest = new SelectorMock();
+
+        extractor
+            .read()
+            .subscribe(spy, err => {
+                done(err);
+            }, () => {
+                try {
+                    spy.should.be.calledOnce;
+                    spy.should.be.calledWithExactly({objId: 5});
+                    done();
+                } catch (e) {
+                    done(e);
+                }
             });
     });
 

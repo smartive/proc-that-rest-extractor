@@ -1,8 +1,6 @@
 import {IExtract} from 'proc-that/dist/interfaces/IExtract';
 import {Observable, Observer} from 'rxjs';
 
-let Promise = require('es6-promise').Promise;
-
 export enum RestExtractorMethod {
     Get,
     Post,
@@ -21,7 +19,7 @@ export class RestExtractor implements IExtract {
      * @param method
      * @param resultSelector
      */
-    constructor(private url:string, private method:RestExtractorMethod = RestExtractorMethod.Get, private resultSelector:(obj:any) => Promise<any> = o => Promise.resolve(o)) {
+    constructor(private url:string, private method:RestExtractorMethod = RestExtractorMethod.Get, private resultSelector:(obj:any) => any = o => o) {
     }
 
     public read():Observable<any> {
@@ -36,6 +34,7 @@ export class RestExtractor implements IExtract {
                 .on('complete', result => {
                     try {
                         let json = typeof result === 'string' ? JSON.parse(result) : result;
+                        json = this.resultSelector(json);
                         if (json instanceof Array || json.constructor === Array) {
                             json.forEach(element => observer.next(element));
                         } else {

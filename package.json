@@ -37,7 +37,6 @@
     "typings": "^0.7.9"
   },
   "dependencies": {
-    "es6-promise": "^3.1.2",
     "restler": "^3.4.0",
     "rxjs": "^5.0.0-beta.4"
   }
