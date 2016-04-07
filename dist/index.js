@@ -1,4 +1,6 @@
 "use strict";
-var RestExtractor_1 = require('./RestExtractor');
-exports.RestExtractor = RestExtractor_1.RestExtractor;
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require('./RestExtractor'));
 //# sourceMappingURL=index.js.map
