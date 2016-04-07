@@ -8,14 +8,8 @@ var rxjs_1 = require('rxjs');
 var RestExtractorMethod = exports.RestExtractorMethod;
 var RestExtractor = (function () {
     function RestExtractor(url, method, resultSelector) {
-        if (method === void 0) {
-            method = RestExtractorMethod.Get;
-        }
-        if (resultSelector === void 0) {
-            resultSelector = function (o) {
-                return o;
-            };
-        }
+        if (method === void 0) { method = RestExtractorMethod.Get; }
+        if (resultSelector === void 0) { resultSelector = function (o) { return o; }; }
         this.url = url;
         this.method = method;
         this.resultSelector = resultSelector;
@@ -26,31 +20,29 @@ var RestExtractor = (function () {
         return rxjs_1.Observable.create(function (observer) {
             _this.rest
                 .request(_this.url, {
-                    method: _this.getUrlMethod()
-                })
+                method: _this.getUrlMethod()
+            })
                 .on('error', function (err) {
-                    observer.error(err);
-                })
+                observer.error(err);
+            })
                 .on('complete', function (result) {
-                    try {
-                        var json = typeof result === 'string' ? JSON.parse(result) : result;
-                        json = _this.resultSelector(json);
-                        if (json instanceof Array || json.constructor === Array) {
-                            json.forEach(function (element) {
-                                return observer.next(element);
-                            });
+                try {
+                    var json = typeof result === 'string' ? JSON.parse(result) : result;
+                    json = _this.resultSelector(json);
+                    if (json instanceof Array || json.constructor === Array) {
+                        json.forEach(function (element) { return observer.next(element); });
                     }
-                        else {
-                            observer.next(json);
+                    else {
+                        observer.next(json);
                     }
-                    }
-                    catch (e) {
-                        observer.error(e);
-                    }
-                    finally {
-                        observer.complete();
-                    }
-                });
+                }
+                catch (e) {
+                    observer.error(e);
+                }
+                finally {
+                    observer.complete();
+                }
+            });
         });
     };
     RestExtractor.prototype.getUrlMethod = function () {
