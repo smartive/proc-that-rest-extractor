@@ -14,6 +14,5 @@ export declare class RestExtractor implements IExtract {
     constructor(url:string, method?:RestExtractorMethod, resultSelector?:(obj:any) => any);
 
     read():Observable<any>;
-
     private getUrlMethod();
 }

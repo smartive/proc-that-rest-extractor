@@ -21,7 +21,6 @@ var RestExtractor = (function () {
         this.resultSelector = resultSelector;
         this.rest = require('restler');
     }
-
     RestExtractor.prototype.read = function () {
         var _this = this;
         return rxjs_1.Observable.create(function (observer) {
@@ -40,10 +39,10 @@ var RestExtractor = (function () {
                             json.forEach(function (element) {
                                 return observer.next(element);
                             });
-                        }
+                    }
                         else {
                             observer.next(json);
-                        }
+                    }
                     }
                     catch (e) {
                         observer.error(e);
