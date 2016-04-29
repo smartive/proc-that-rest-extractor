@@ -1,6 +1,10 @@
-# RestExtractor [![Build Status](https://travis-ci.org/buehler/proc-that-rest-extractor.svg?branch=master)](https://travis-ci.org/buehler/proc-that-rest-extractor)
+# RestExtractor
 Modular extractor for `proc-that`. Loads items from REST APIs via http requests.
 Uses [restler](https://github.com/danwrong/restler) for downloading resources.
+
+##### A bunch of badges
+
+[![Build Status](https://travis-ci.org/smartive/proc-that-rest-extractor.svg?maxAge=3600)](https://travis-ci.org/smartive/proc-that-rest-extractor) [![npm](https://img.shields.io/npm/v/proc-that-rest-extractor.svg?maxAge=3600)](https://www.npmjs.com/package/proc-that-rest-extractor) [![Coverage status](https://img.shields.io/coveralls/smartive/proc-that-rest-extractor.svg?maxAge=3600)](https://coveralls.io/github/smartive/proc-that-rest-extractor) [![license](https://img.shields.io/github/license/smartive/proc-that-rest-extractor.svg?maxAge=2592000)](https://github.com/smartive/proc-that-rest-extractor)
 
 ## Installation
 
