@@ -1,4 +1,4 @@
-import {IExtract} from 'proc-that/dist/interfaces/IExtract';
+import {IExtract} from 'proc-that';
 import {Observable, Observer} from 'rxjs';
 
 export enum RestExtractorMethod {
