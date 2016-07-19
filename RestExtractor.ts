@@ -1,4 +1,4 @@
-import {IExtract} from 'proc-that';
+import {Extractor} from 'proc-that';
 import {Observable, Observer} from 'rxjs';
 
 export enum RestExtractorMethod {
@@ -10,7 +10,7 @@ export enum RestExtractorMethod {
 /**
  *
  */
-export class RestExtractor implements IExtract {
+export class RestExtractor implements Extractor {
     private rest:any = require('restler');
 
     /**
