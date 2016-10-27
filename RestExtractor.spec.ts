@@ -180,7 +180,9 @@ describe('RestExtractor', () => {
     });
 
     it('should set request timeout', done => {
-        extractor = new RestExtractor('url', RestExtractorMethod.Get, undefined, 42);
+        extractor = new RestExtractor('url', RestExtractorMethod.Get, undefined, {
+            timeout: 42
+        });
         (extractor as any).rest = new SelectorMock();
 
         sinon.spy((extractor as any).rest, 'request');
