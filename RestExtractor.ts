@@ -7,6 +7,28 @@ export enum RestExtractorMethod {
     Put
 }
 
+type MethodOptions = {
+    method?: string;
+};
+
+export type RestExtractorOptions = {
+    query?: any;
+    data?: string | any;
+    parser?: any;
+    encoding?: string;
+    decoding?: string;
+    headers?: { [name: string]: string };
+    username?: string;
+    password?: string;
+    accessToken?: string;
+    multipart?: any;
+    client?: any;
+    followRedirects?: boolean;
+    timeout?: number;
+    rejectUnauthorized?: boolean;
+    agent?: any;
+};
+
 /**
  *
  */
@@ -20,16 +42,15 @@ export class RestExtractor implements Extractor {
      * @param resultSelector
      * @param {number} [timeout=120000] Request timeout in milliseconds
      */
-    constructor(private url:string, private method:RestExtractorMethod = RestExtractorMethod.Get, private resultSelector:(obj:any) => any = o => o, private timeout: number = 120000) {
+    constructor(private url:string, private method:RestExtractorMethod = RestExtractorMethod.Get, private resultSelector:(obj:any) => any = o => o, private restlerOptions: RestExtractorOptions = {}) {
     }
 
-    public read():Observable<any> {
+    public read(): Observable<any> {
         return Observable.create((observer:Observer<any>) => {
+            let options: MethodOptions & RestExtractorOptions = this.restlerOptions;
+            options.method = this.getUrlMethod(); 
             this.rest
-                .request(this.url, {
-                    method: this.getUrlMethod(),
-                    timeout: this.timeout
-                })
+                .request(this.url, options)
                 .on('error', err => {
                     observer.error(err);
                 })
