@@ -18,15 +18,17 @@ export class RestExtractor implements Extractor {
      * @param url
      * @param method
      * @param resultSelector
+     * @param {number} [timeout=120000] Request timeout in milliseconds
      */
-    constructor(private url:string, private method:RestExtractorMethod = RestExtractorMethod.Get, private resultSelector:(obj:any) => any = o => o) {
+    constructor(private url:string, private method:RestExtractorMethod = RestExtractorMethod.Get, private resultSelector:(obj:any) => any = o => o, private timeout: number = 120000) {
     }
 
     public read():Observable<any> {
         return Observable.create((observer:Observer<any>) => {
             this.rest
                 .request(this.url, {
-                    method: this.getUrlMethod()
+                    method: this.getUrlMethod(),
+                    timeout: this.timeout
                 })
                 .on('error', err => {
                     observer.error(err);
