@@ -179,4 +179,26 @@ describe('RestExtractor', () => {
             });
     });
 
+    it('should set request timeout', done => {
+        extractor = new RestExtractor('url', RestExtractorMethod.Get, undefined, {
+            timeout: 42
+        });
+        (extractor as any).rest = new SelectorMock();
+
+        sinon.spy((extractor as any).rest, 'request');
+
+        extractor
+            .read()
+            .subscribe(() => {}, err => {
+                done(err);
+            }, () => {
+                try {
+                    (extractor as any).rest.request.should.be.calledWith('url', { method: 'get', timeout: 42 });
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            });
+    });
+
 });
