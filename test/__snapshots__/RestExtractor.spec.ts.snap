@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RestExtractor should get an array of objects 1`] = `
+Object {
+  "objId": 1,
+}
+`;
+
+exports[`RestExtractor should get single object 1`] = `
+Object {
+  "objId": 5,
+}
+`;
+
+exports[`RestExtractor should parse string to an object 1`] = `
+Object {
+  "objId": 5,
+}
+`;
+
+exports[`RestExtractor should set request timeout 1`] = `
+Array [
+  "url",
+  Object {
+    "method": "get",
+    "timeout": 42,
+  },
+]
+`;
+
+exports[`RestExtractor should use resultSelector correctly 1`] = `
+Object {
+  "objId": 5,
+}
+`;

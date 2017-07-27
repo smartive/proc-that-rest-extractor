@@ -1,10 +1,10 @@
-import {Extractor} from 'proc-that';
-import {Observable, Observer} from 'rxjs';
+import { Extractor } from 'proc-that';
+import { Observable, Observer } from 'rxjs';
 
 export enum RestExtractorMethod {
     Get,
     Post,
-    Put
+    Put,
 }
 
 type MethodOptions = {
@@ -33,7 +33,7 @@ export type RestExtractorOptions = {
  *
  */
 export class RestExtractor implements Extractor {
-    private rest:any = require('restler');
+    private rest: any = require('restler');
 
     /**
      *
@@ -42,26 +42,30 @@ export class RestExtractor implements Extractor {
      * @param resultSelector
      * @param {number} [timeout=120000] Request timeout in milliseconds
      */
-    constructor(private url:string, private method:RestExtractorMethod = RestExtractorMethod.Get, private resultSelector:(obj:any) => any = o => o, private restlerOptions: RestExtractorOptions = {}) {
-    }
+    constructor(
+        private url: string,
+        private method: RestExtractorMethod = RestExtractorMethod.Get,
+        private resultSelector: (obj: any) => any = o => o,
+        private restlerOptions: RestExtractorOptions = {},
+    ) { }
 
     public read(): Observable<any> {
-        return Observable.create((observer:Observer<any>) => {
-            let options: MethodOptions & RestExtractorOptions = this.restlerOptions;
-            options.method = this.getUrlMethod(); 
+        return Observable.create((observer: Observer<any>) => {
+            const options: MethodOptions & RestExtractorOptions = this.restlerOptions;
+            options.method = this.getUrlMethod();
             this.rest
                 .request(this.url, options)
-                .on('error', err => {
+                .on('error', (err) => {
                     observer.error(err);
                 })
-                .on('complete', result => {
+                .on('complete', (result) => {
                     try {
                         let json = typeof result === 'string' ? JSON.parse(result) : result;
                         json = this.resultSelector(json);
                         if (json instanceof Array || json.constructor === Array) {
                             json.forEach(element => observer.next(element));
                         } else {
-                            observer.next(json)
+                            observer.next(json);
                         }
                     } catch (e) {
                         observer.error(e);
@@ -72,7 +76,7 @@ export class RestExtractor implements Extractor {
         });
     }
 
-    private getUrlMethod():string {
+    private getUrlMethod(): string {
         switch (this.method) {
             case RestExtractorMethod.Post:
                 return 'post';
