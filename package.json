@@ -32,7 +32,6 @@
   "devDependencies": {
     "@types/jest": "^20.0.5",
     "del-cli": "^1.1.0",
-    "github-post-release": "^1.12.1",
     "jest": "^20.0.4",
     "semantic-release": "^6.3.6",
     "ts-jest": "^20.0.7",
@@ -47,8 +46,5 @@
     "@types/node": "^8.0.17",
     "rxjs": "^5.4.2",
     "tslib": "^1.7.1"
-  },
-  "release": {
-    "generateNotes": "github-post-release"
   }
 }
