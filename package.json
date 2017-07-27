@@ -1,6 +1,6 @@
 {
   "name": "proc-that-rest-extractor",
-  "version": "0.5.0",
+  "version": "0.0.0-development",
   "description": "extractor for proc-that which loads results from REST apis.",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "develop": "npm run clean && tsc -p .",
     "lint": "tslint -c ./tslint.json -p ./config/tsconfig.build.json",
     "test": "npm run lint && npm run clean && jest -c ./jest.json",
-    "test:watch": "npm run clean && jest -c ./jest.json --watch"
+    "test:watch": "npm run clean && jest -c ./jest.json --watch",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "keywords": [
     "etl",
@@ -31,7 +32,9 @@
   "devDependencies": {
     "@types/jest": "^20.0.5",
     "del-cli": "^1.1.0",
+    "github-post-release": "^1.12.1",
     "jest": "^20.0.4",
+    "semantic-release": "^6.3.6",
     "ts-jest": "^20.0.7",
     "tslint": "^5.5.0",
     "tslint-config-airbnb": "^5.2.1",
@@ -44,5 +47,8 @@
     "@types/node": "^8.0.17",
     "rxjs": "^5.4.2",
     "tslib": "^1.7.1"
+  },
+  "release": {
+    "generateNotes": "github-post-release"
   }
 }
