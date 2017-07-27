@@ -1,4 +1,6 @@
 # RestExtractor
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/smartive/proc-that-rest-extractor.svg)](https://greenkeeper.io/)
 Modular extractor for `proc-that`. Loads items from REST APIs via http requests.
 Uses [restler](https://github.com/danwrong/restler) for downloading resources.
 
