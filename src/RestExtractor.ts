@@ -4,7 +4,7 @@ import { Observable, Observer } from 'rxjs';
 export enum RestExtractorMethod {
     Get,
     Post,
-    Put
+    Put,
 }
 
 type MethodOptions = {
@@ -46,26 +46,26 @@ export class RestExtractor implements Extractor {
         private url: string,
         private method: RestExtractorMethod = RestExtractorMethod.Get,
         private resultSelector: (obj: any) => any = o => o,
-        private restlerOptions: RestExtractorOptions = {}
+        private restlerOptions: RestExtractorOptions = {},
     ) { }
 
     public read(): Observable<any> {
         return Observable.create((observer: Observer<any>) => {
-            let options: MethodOptions & RestExtractorOptions = this.restlerOptions;
+            const options: MethodOptions & RestExtractorOptions = this.restlerOptions;
             options.method = this.getUrlMethod();
             this.rest
                 .request(this.url, options)
-                .on('error', err => {
+                .on('error', (err) => {
                     observer.error(err);
                 })
-                .on('complete', result => {
+                .on('complete', (result) => {
                     try {
                         let json = typeof result === 'string' ? JSON.parse(result) : result;
                         json = this.resultSelector(json);
                         if (json instanceof Array || json.constructor === Array) {
                             json.forEach(element => observer.next(element));
                         } else {
-                            observer.next(json)
+                            observer.next(json);
                         }
                     } catch (e) {
                         observer.error(e);
