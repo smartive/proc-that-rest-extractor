@@ -1,21 +1,6 @@
 language: node_js
 node_js:
+- '8'
 - '6'
-- '5'
-- '4.2'
 
-script: npm run citest
 after_script: npm install coveralls@^2.11.9 && cat ./coverage/lcov.info | coveralls
-
-before_deploy:
-- npm run bootstrap
-- tsc --outDir .
-
-deploy:
-  provider: npm
-  email: christoph.buehler@bluewin.ch
-  api_key:
-    secure: rZpdXuZORp8oQWogOXlRJjBPSwPJxxHXYoJY/2iqw/0OAVB65UPKEPX7+F2u33KrodWSR/vf/D4AUFnbJaGzLEecQnCJjIcvaFOhsbmoZxVWM2LWuboH2CfKhxVrcN2c4LBmlo+sItuVarqqvbGakb9BmkwWEsD4VSU6mjoBJ9QQfdDyyXCB64sPLabbd9apah096lOb4KXqxcs0A4GMYVR54MuEf/+nhEiw34pqMJrwI2CHPD2Z0FujHFNj8cT7c4ZbyqvMQY/uoQzbOyeJMUfQ579jVhUEDC/gs2O/OZGbjSwU91t9Pm+keFCWYzUakOaNz1JM5y8zgSQH3n26iCmp+nFPxP0rioIAnI0QL04JgXxnZHOgVo0R+Oz+/B1vCPqnr6C5G2V+flQCht5BDHtCne5Q+roiMaRL7nmrxeHd3qlQ53l7RewKu+qgllVYiyWRUmVFmcs84NwmcYJQauwObkaKOrEvOSi77taqQDD9WKIEY0F156+1gAdzKFl1oLyMCbLDy/MmLrOejCCl88HH/+JD44hDBlgM/SpcENci5MjP24V0WXYJDkhcgFjDCBO+uc4seZYvrg0kMLRhg5hSxTIT93zHZNvrRkAw1TD73tV/tafXrO588ZI+/eJBIcTCc2kRg2FuDnrsspEBO66obsmpAeuf49dipD4oGTg=
-  on:
-    tags: true
-    repo: smartive/proc-that-rest-extractor
