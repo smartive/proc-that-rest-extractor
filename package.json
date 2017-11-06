@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "extractor for proc-that which loads results from REST apis.",
   "main": "index.js",
+  "typings": "index.d.js",
   "scripts": {
     "clean": "del-cli ./build ./coverage",
     "build": "npm run clean && tsc -p ./config/tsconfig.build.json",
