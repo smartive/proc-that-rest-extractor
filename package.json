@@ -46,7 +46,7 @@
   "dependencies": {
     "proc-that": "^1.0.2",
     "restler": "^3.4.0",
-    "@types/node": "^9.3.0",
+    "@types/node": "^10.0.3",
     "rxjs": "^5.5.6",
     "tslib": "^1.8.1"
   }
