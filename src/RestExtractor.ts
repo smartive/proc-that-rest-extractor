@@ -1,89 +1,38 @@
 import { Extractor } from 'proc-that';
 import { Observable, Observer } from 'rxjs';
+import { fetch } from 'undici';
 
-export enum RestExtractorMethod {
-    Get,
-    Post,
-    Put,
-}
-
-type MethodOptions = {
-    method?: string;
-};
-
-export type RestExtractorOptions = {
-    query?: any;
-    data?: string | any;
-    parser?: any;
-    encoding?: string;
-    decoding?: string;
-    headers?: { [name: string]: string };
-    username?: string;
-    password?: string;
-    accessToken?: string;
-    multipart?: any;
-    client?: any;
-    followRedirects?: boolean;
-    timeout?: number;
-    rejectUnauthorized?: boolean;
-    agent?: any;
-};
-
-/**
- *
- */
 export class RestExtractor implements Extractor {
-    private rest: any = require('restler');
+  constructor(
+    private url: string,
+    private resultSelector: (obj: any) => any = (o) => o,
+    private init: Parameters<typeof fetch>[1] = {}
+  ) {}
 
-    /**
-     *
-     * @param url
-     * @param method
-     * @param resultSelector
-     * @param {number} [timeout=120000] Request timeout in milliseconds
-     */
-    constructor(
-        private url: string,
-        private method: RestExtractorMethod = RestExtractorMethod.Get,
-        private resultSelector: (obj: any) => any = o => o,
-        private restlerOptions: RestExtractorOptions = {},
-    ) { }
+  public read(): Observable<any> {
+    return new Observable((observer: Observer<any>) => {
+      fetch(this.url, this.init)
+        .then(async (response) => {
+          try {
+            if (!response.ok) {
+              return observer.error(`Request failed with status ${response.status}: ${await response.text()}`);
+            }
 
-    public read(): Observable<any> {
-        return Observable.create((observer: Observer<any>) => {
-            const options: MethodOptions & RestExtractorOptions = this.restlerOptions;
-            options.method = this.getUrlMethod();
-            this.rest
-                .request(this.url, options)
-                .on('error', (err) => {
-                    observer.error(err);
-                })
-                .on('complete', (result) => {
-                    try {
-                        let json = typeof result === 'string' ? JSON.parse(result) : result;
-                        json = this.resultSelector(json);
-                        if (json instanceof Array || json.constructor === Array) {
-                            json.forEach(element => observer.next(element));
-                        } else {
-                            observer.next(json);
-                        }
-                    } catch (e) {
-                        observer.error(e);
-                    } finally {
-                        observer.complete();
-                    }
-                });
+            const data = this.resultSelector(await response.json());
+            if (data instanceof Array || data.constructor === Array) {
+              data.forEach((element) => observer.next(element));
+            } else {
+              observer.next(data);
+            }
+          } catch (e) {
+            observer.error(e);
+          } finally {
+            observer.complete();
+          }
+        })
+        .catch((err) => {
+          observer.error(err);
         });
-    }
-
-    private getUrlMethod(): string {
-        switch (this.method) {
-            case RestExtractorMethod.Post:
-                return 'post';
-            case RestExtractorMethod.Put:
-                return 'put';
-            default:
-                return 'get';
-        }
-    }
+    });
+  }
 }

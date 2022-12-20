@@ -1,196 +1,199 @@
-import { RestExtractor, RestExtractorMethod } from '../src';
-import { EventEmitter } from 'events';
+import { Interceptable, MockAgent, setGlobalDispatcher } from 'undici';
+import { RestExtractor } from '../src';
 
-abstract class Mock {
-    public request(url: string, opt: any): EventEmitter {
-        let emitter = new EventEmitter();
-        setTimeout(() => {
-            try {
-                let data = this.data();
-                emitter.emit('complete', data);
-            } catch (e) {
-                emitter.emit('error', e);
-            }
-        }, 100);
-        return emitter;
-    }
+const arrayMock = [{ objId: 1 }, { objId: 2 }, { objId: 3 }, { objId: 4 }, { objId: 5 }];
 
-    protected abstract data(): any;
-}
+const objectMock = { objId: 5 };
 
-class ArrayMock extends Mock {
-    protected data(): any {
-        return [
-            { objId: 1 },
-            { objId: 2 },
-            { objId: 3 },
-            { objId: 4 },
-            { objId: 5 }
-        ];
-    }
-}
+const errorMock = new Error('test');
 
-class ObjectMock extends Mock {
-    protected data(): any {
-        return { objId: 5 };
-    }
-}
+const stringMock = '{"objId":5}';
 
-class ErrorMock extends Mock {
-    protected data(): any {
-        throw new Error('test');
-    }
-}
+const stringErrorMock = '{objId:5}';
 
-class StringMock extends Mock {
-    protected data(): any {
-        return '{"objId":5}';
-    }
-}
-
-class StringErrorMock extends Mock {
-    protected data(): any {
-        return '{objId:5}';
-    }
-}
-
-class SelectorMock extends Mock {
-    protected data(): any {
-        return {
-            data: [{ objId: 5 }]
-        };
-    }
-}
+const selectorMock = {
+  data: [{ objId: 5 }],
+};
 
 describe('RestExtractor', () => {
+  let extractor: RestExtractor;
+  let agent: MockAgent;
+  let mockPool: Interceptable;
 
-    let extractor: RestExtractor;
+  beforeEach(() => {
+    extractor = new RestExtractor('https://my.example.com');
 
-    beforeEach(() => {
-        extractor = new RestExtractor('url');
+    agent = new MockAgent();
+    agent.disableNetConnect();
+
+    setGlobalDispatcher(agent);
+    mockPool = agent.get('https://my.example.com');
+  });
+
+  it('should get an array of objects', (done) => {
+    const spy = jest.fn();
+    mockPool.intercept({ path: '/' }).reply(200, arrayMock);
+
+    extractor.read().subscribe({
+      next: spy,
+      error: (err) => {
+        done(err);
+      },
+      complete: () => {
+        try {
+          expect(spy.mock.calls.length).toBe(5);
+          expect(spy.mock.calls[0][0]).toMatchSnapshot();
+          done();
+        } catch (e) {
+          done(e);
+        }
+      },
+    });
+  });
+
+  it('should get single object', (done) => {
+    const spy = jest.fn();
+    mockPool.intercept({ path: '/' }).reply(200, objectMock);
+
+    extractor.read().subscribe({
+      next: spy,
+      error: (err) => {
+        done(err);
+      },
+      complete: () => {
+        try {
+          expect(spy.mock.calls.length).toBe(1);
+          expect(spy.mock.calls[0][0]).toMatchSnapshot();
+          done();
+        } catch (e) {
+          done(e);
+        }
+      },
+    });
+  });
+
+  it('should call error', (done) => {
+    mockPool.intercept({ path: '/' }).replyWithError(errorMock);
+
+    extractor.read().subscribe({
+      error: () => {
+        done();
+      },
+      complete: () => {
+        done(new Error('did not throw'));
+      },
+    });
+  });
+
+  it('should call error on 500 status code', (done) => {
+    mockPool.intercept({ path: '/' }).reply(500, 'server error');
+
+    extractor.read().subscribe({
+      error: () => {
+        done();
+      },
+      complete: () => {
+        done(new Error('did not throw'));
+      },
+    });
+  });
+
+  it('should call error on 404 not found', (done) => {
+    mockPool.intercept({ path: '/' }).reply(404, 'not found');
+
+    extractor.read().subscribe({
+      error: () => {
+        done();
+      },
+      complete: () => {
+        done(new Error('did not throw'));
+      },
+    });
+  });
+
+  it('should parse string to an object', (done) => {
+    const spy = jest.fn();
+    mockPool.intercept({ path: '/' }).reply(200, stringMock);
+
+    extractor.read().subscribe({
+      next: spy,
+      error: (err) => {
+        done(err);
+      },
+      complete: () => {
+        try {
+          expect(spy.mock.calls.length).toBe(1);
+          expect(spy.mock.calls[0][0]).toMatchSnapshot();
+          done();
+        } catch (e) {
+          done(e);
+        }
+      },
+    });
+  });
+
+  it('should call error on an invalid parse', (done) => {
+    mockPool.intercept({ path: '/' }).reply(200, stringErrorMock);
+
+    extractor.read().subscribe({
+      error: () => {
+        done();
+      },
+      complete: () => {
+        done(new Error('did not throw'));
+      },
+    });
+  });
+
+  it('should use resultSelector correctly', (done) => {
+    const spy = jest.fn();
+    extractor = new RestExtractor('https://my.example.com/url', (o) => o.data);
+    mockPool.intercept({ path: '/url' }).reply(200, selectorMock);
+
+    extractor.read().subscribe({
+      next: spy,
+      error: (err) => {
+        done(err);
+      },
+      complete: () => {
+        try {
+          expect(spy.mock.calls.length).toBe(1);
+          expect(spy.mock.calls[0][0]).toMatchSnapshot();
+          done();
+        } catch (e) {
+          done(e);
+        }
+      },
+    });
+  });
+
+  it('should set request options', (done) => {
+    const spy = jest.fn();
+    extractor = new RestExtractor('https://my.example.com/url', undefined, {
+      headers: {
+        'x-test': 'test',
+        authorization: 'Bearer 123',
+      },
+    });
+    mockPool.intercept({ path: '/url' }).reply(200, (req) => {
+      expect(req.headers).toMatchSnapshot();
+      return selectorMock;
     });
 
-    it('should get an array of objects', done => {
-        let spy = jest.fn();
-        (extractor as any).rest = new ArrayMock();
-
-        extractor
-            .read()
-            .subscribe(spy, err => {
-                done(err);
-            }, () => {
-                try {
-                    expect(spy.mock.calls.length).toBe(5);
-                    expect(spy.mock.calls[0][0]).toMatchSnapshot();                    
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            });
+    extractor.read().subscribe({
+      next: spy,
+      error: (err) => {
+        done(err);
+      },
+      complete: () => {
+        try {
+          expect(spy.mock.calls.length).toBe(1);
+          expect(spy.mock.calls[0][0]).toMatchSnapshot();
+          done();
+        } catch (e) {
+          done(e);
+        }
+      },
     });
-
-    it('should get single object', done => {
-        let spy = jest.fn();
-        (extractor as any).rest = new ObjectMock();
-
-        extractor
-            .read()
-            .subscribe(spy, err => {
-                done(err);
-            }, () => {
-                try {
-                    expect(spy.mock.calls.length).toBe(1);
-                    expect(spy.mock.calls[0][0]).toMatchSnapshot();                    
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            });
-    });
-
-    it('should call error', done => {
-        (extractor as any).rest = new ErrorMock();
-
-        extractor
-            .read()
-            .subscribe(null, err => {
-                done();
-            }, () => {
-                done(new Error('did not throw'));
-            });
-    });
-
-    it('should parse string to an object', done => {
-        let spy = jest.fn();
-        (extractor as any).rest = new StringMock();
-
-        extractor
-            .read()
-            .subscribe(spy, err => {
-                done(err);
-            }, () => {
-                try {
-                    expect(spy.mock.calls.length).toBe(1);
-                    expect(spy.mock.calls[0][0]).toMatchSnapshot();
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            });
-    });
-
-    it('should call error on an invalid parse', done => {
-        (extractor as any).rest = new StringErrorMock();
-
-        extractor
-            .read()
-            .subscribe(null, err => {
-                done();
-            }, () => {
-                done(new Error('did not throw'));
-            });
-    });
-
-    it('should use resultSelector correctly', done => {
-        let spy = jest.fn();
-        extractor = new RestExtractor('url', RestExtractorMethod.Get, o => o.data);
-        (extractor as any).rest = new SelectorMock();
-
-        extractor
-            .read()
-            .subscribe(spy, err => {
-                done(err);
-            }, () => {
-                try {
-                    expect(spy.mock.calls.length).toBe(1);
-                    expect(spy.mock.calls[0][0]).toMatchSnapshot();
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            });
-    });
-
-    it('should set request timeout', done => {
-        extractor = new RestExtractor('url', RestExtractorMethod.Get, undefined, {
-            timeout: 42
-        });
-        (extractor as any).rest = new SelectorMock();
-
-        (extractor as any).rest.request = jest.fn((extractor as any).rest.request);
-
-        extractor
-            .read()
-            .subscribe(() => { }, err => {
-                done(err);
-            }, () => {
-                try {
-                    expect((extractor as any).rest.request.mock.calls[0]).toMatchSnapshot();
-                    done();
-                } catch (e) {
-                    done(e);
-                }
-            });
-    });
-
+  });
 });

@@ -1,35 +1,47 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`RestExtractor should get an array of objects 1`] = `
-Object {
+{
   "objId": 1,
 }
 `;
 
 exports[`RestExtractor should get single object 1`] = `
-Object {
+{
   "objId": 5,
 }
 `;
 
 exports[`RestExtractor should parse string to an object 1`] = `
-Object {
+{
   "objId": 5,
 }
 `;
 
-exports[`RestExtractor should set request timeout 1`] = `
-Array [
-  "url",
-  Object {
-    "method": "get",
-    "timeout": 42,
-  },
-]
+exports[`RestExtractor should set request options 1`] = `
+{
+  "accept": "*/*",
+  "accept-encoding": "br, gzip, deflate",
+  "accept-language": "*",
+  "authorization": "Bearer 123",
+  "sec-fetch-mode": "cors",
+  "user-agent": "undici",
+  "x-test": "test",
+}
+`;
+
+exports[`RestExtractor should set request options 2`] = `
+{
+  "data": [
+    {
+      "objId": 5,
+    },
+  ],
+}
 `;
 
 exports[`RestExtractor should use resultSelector correctly 1`] = `
-Object {
+{
   "objId": 5,
 }
 `;
