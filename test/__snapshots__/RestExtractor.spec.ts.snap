@@ -18,6 +18,28 @@ exports[`RestExtractor should parse string to an object 1`] = `
 }
 `;
 
+exports[`RestExtractor should set request options 1`] = `
+{
+  "accept": "*/*",
+  "accept-encoding": "br, gzip, deflate",
+  "accept-language": "*",
+  "authorization": "Bearer 123",
+  "sec-fetch-mode": "cors",
+  "user-agent": "undici",
+  "x-test": "test",
+}
+`;
+
+exports[`RestExtractor should set request options 2`] = `
+{
+  "data": [
+    {
+      "objId": 5,
+    },
+  ],
+}
+`;
+
 exports[`RestExtractor should set request timeout 1`] = `
 Array [
   "url",
@@ -29,7 +51,7 @@ Array [
 `;
 
 exports[`RestExtractor should use resultSelector correctly 1`] = `
-Object {
+{
   "objId": 5,
 }
 `;

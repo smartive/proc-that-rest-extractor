@@ -1,4 +1,4 @@
-import { Agent, Interceptable, MockAgent, setGlobalDispatcher } from 'undici';
+import { Interceptable, MockAgent, setGlobalDispatcher } from 'undici';
 import { RestExtractor } from '../src';
 
 const arrayMock = [{ objId: 1 }, { objId: 2 }, { objId: 3 }, { objId: 4 }, { objId: 5 }];
@@ -147,15 +147,15 @@ describe('RestExtractor', () => {
 
   it('should use resultSelector correctly', (done) => {
     const spy = jest.fn();
-    extractor = new RestExtractor('url', (o) => o.data);
-    mockPool.intercept({ path: '/' }).reply(200, selectorMock);
+    extractor = new RestExtractor('https://my.example.com/url', (o) => o.data);
+    mockPool.intercept({ path: '/url' }).reply(200, selectorMock);
 
-    extractor.read().subscribe(
-      spy,
-      (err) => {
+    extractor.read().subscribe({
+      next: spy,
+      error: (err) => {
         done(err);
       },
-      () => {
+      complete: () => {
         try {
           expect(spy.mock.calls.length).toBe(1);
           expect(spy.mock.calls[0][0]).toMatchSnapshot();
@@ -163,28 +163,32 @@ describe('RestExtractor', () => {
         } catch (e) {
           done(e);
         }
-      }
-    );
+      },
+    });
   });
 
-  it('should set request timeout', (done) => {
-    extractor = new RestExtractor('url', undefined, {
-      dispatcher: new Agent({
-        keepAliveTimeout: 9,
-        keepAliveMaxTimeout: 8,
-        bodyTimeout: 12,
-        headersTimeout: 12,
-      }),
+  it('should set request options', (done) => {
+    const spy = jest.fn();
+    extractor = new RestExtractor('https://my.example.com/url', undefined, {
+      headers: {
+        'x-test': 'test',
+        authorization: 'Bearer 123',
+      },
     });
-    mockPool.intercept({ path: '/' }).reply(200, selectorMock);
+    mockPool.intercept({ path: '/url' }).reply(200, (req) => {
+      expect(req.headers).toMatchSnapshot();
+      return selectorMock;
+    });
 
     extractor.read().subscribe({
+      next: spy,
       error: (err) => {
         done(err);
       },
       complete: () => {
         try {
-          expect((extractor as any).rest.request.mock.calls[0]).toMatchSnapshot();
+          expect(spy.mock.calls.length).toBe(1);
+          expect(spy.mock.calls[0][0]).toMatchSnapshot();
           done();
         } catch (e) {
           done(e);
