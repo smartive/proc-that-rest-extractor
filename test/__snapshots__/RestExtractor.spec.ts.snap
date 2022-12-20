@@ -40,16 +40,6 @@ exports[`RestExtractor should set request options 2`] = `
 }
 `;
 
-exports[`RestExtractor should set request timeout 1`] = `
-Array [
-  "url",
-  Object {
-    "method": "get",
-    "timeout": 42,
-  },
-]
-`;
-
 exports[`RestExtractor should use resultSelector correctly 1`] = `
 {
   "objId": 5,
