@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # main
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
-          node-version: '18.x'
+          node-version: '26.x'
       - run: npm install
       - run: npm run build
       - name: semantic release
